@@ -14,11 +14,9 @@ const handleError = (res, error) => {
   res.status(500).json({ error: "Database error" });
 };
 
-// Auth routes
 app.post("/api/auth/register", register);
 app.post("/api/auth/login", login);
 
-// Get scout's tracked players
 app.get("/api/dashboard/:scoutId", async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -36,7 +34,6 @@ app.get("/api/dashboard/:scoutId", async (req, res) => {
   }
 });
 
-// Search players
 app.get("/api/players", async (req, res) => {
   try {
     const q = (req.query.search || "").trim();
@@ -57,7 +54,6 @@ app.get("/api/players", async (req, res) => {
   }
 });
 
-// Get single player with stats
 app.get("/api/players/:id", async (req, res) => {
   try {
     const playerId = Number(req.params.id);
@@ -95,7 +91,6 @@ app.get("/api/players/:id", async (req, res) => {
   }
 });
 
-// Add player to scout's dashboard
 app.post("/api/dashboard/:scoutId", async (req, res) => {
   try {
     const scoutId = Number(req.params.scoutId);
@@ -116,7 +111,6 @@ app.post("/api/dashboard/:scoutId", async (req, res) => {
   }
 });
 
-// Remove player from scout's dashboard
 app.delete("/api/dashboard/:scoutId/:playerId", async (req, res) => {
   try {
     await pool.query(
@@ -129,7 +123,6 @@ app.delete("/api/dashboard/:scoutId/:playerId", async (req, res) => {
   }
 });
 
-// Get all clubs
 app.get("/api/clubs", async (req, res) => {
   try {
     const [rows] = await pool.query(`SELECT club_id, name FROM club ORDER BY name`);
@@ -139,7 +132,6 @@ app.get("/api/clubs", async (req, res) => {
   }
 });
 
-// Create a new player
 app.post("/api/players", async (req, res) => {
   try {
     const {
@@ -186,7 +178,6 @@ app.post("/api/players", async (req, res) => {
   }
 });
 
-// Delete a player permanently
 app.delete("/api/players/:playerId", async (req, res) => {
   try {
     const playerId = Number(req.params.playerId);

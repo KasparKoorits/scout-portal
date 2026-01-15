@@ -5,14 +5,10 @@ import User from "../models/userModel.js";
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 export const register = async (req, res) => {
-  const { username, password, email, name } = req.body;
+  const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password are required" });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
   }
 
   try {
@@ -23,20 +19,9 @@ export const register = async (req, res) => {
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const userId = await User.create({ 
-      username, 
-      password_hash,
-      email: email || null,
-      name: name || username
-    });
+    await User.create({ username, password_hash });
 
-    const token = jwt.sign({ id: userId, username }, JWT_SECRET, { expiresIn: "7d" });
-
-    res.status(201).json({ 
-      auth: true,
-      token,
-      user: { id: userId, username, name: name || username }
-    });
+    res.status(201).json({ message: "User registered successfully!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred during registration" });
@@ -63,18 +48,9 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user.scout_id, username: user.username || user.email }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user.scout_id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.json({ 
-      auth: true, 
-      token,
-      user: {
-        id: user.scout_id,
-        username: user.username || user.email,
-        name: user.name,
-        email: user.email
-      }
-    });
+    res.json({ auth: true, token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred during login" });

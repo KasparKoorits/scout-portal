@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import mysql from "mysql2/promise";
+import { pool } from "./config/db.js";
+import { register, login } from "./controllers/authController.js";
 
 const app = express();
 app.use(cors());
@@ -8,12 +9,14 @@ app.use(express.json());
 
 const PORT = 3001;
 
-const pool = mysql.createPool({
-  host: "localhost",
-  user: "scoutapp",
-  password: "scoutpass",
-  database: "scouting_portal",
-});
+const handleError = (res, error) => {
+  console.error(error);
+  res.status(500).json({ error: "Database error" });
+};
+
+// Auth routes
+app.post("/api/auth/register", register);
+app.post("/api/auth/login", login);
 
 // Get scout's tracked players
 app.get("/api/dashboard/:scoutId", async (req, res) => {
@@ -29,8 +32,7 @@ app.get("/api/dashboard/:scoutId", async (req, res) => {
     );
     res.json(rows);
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -51,8 +53,7 @@ app.get("/api/players", async (req, res) => {
     );
     res.json(rows);
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -90,8 +91,7 @@ app.get("/api/players/:id", async (req, res) => {
       stats: statsRows[0] || null,
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -112,8 +112,7 @@ app.post("/api/dashboard/:scoutId", async (req, res) => {
 
     res.json({ ok: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -126,8 +125,7 @@ app.delete("/api/dashboard/:scoutId/:playerId", async (req, res) => {
     );
     res.json({ ok: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -137,8 +135,7 @@ app.get("/api/clubs", async (req, res) => {
     const [rows] = await pool.query(`SELECT club_id, name FROM club ORDER BY name`);
     res.json(rows);
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -185,8 +182,7 @@ app.post("/api/players", async (req, res) => {
 
     res.json({ ok: true, player_id: playerId });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 
@@ -205,8 +201,7 @@ app.delete("/api/players/:playerId", async (req, res) => {
 
     res.json({ ok: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Database error" });
+    handleError(res, e);
   }
 });
 

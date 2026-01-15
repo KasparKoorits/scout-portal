@@ -3,18 +3,20 @@
 CREATE DATABASE IF NOT EXISTS scouting_portal;
 USE scouting_portal;
 
-CREATE TABLE club (
+CREATE TABLE IF NOT EXISTS club (
   club_id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL
 );
 
-CREATE TABLE scout (
+CREATE TABLE IF NOT EXISTS scout (
   scout_id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
-  email VARCHAR(255)
+  email VARCHAR(255) UNIQUE,
+  password_hash VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE player (
+CREATE TABLE IF NOT EXISTS player (
   player_id INT AUTO_INCREMENT PRIMARY KEY,
   club_id INT,
   full_name VARCHAR(120) NOT NULL,
@@ -29,7 +31,7 @@ CREATE TABLE player (
   FOREIGN KEY (club_id) REFERENCES club(club_id)
 );
 
-CREATE TABLE player_stats (
+CREATE TABLE IF NOT EXISTS player_stats (
   stats_id INT AUTO_INCREMENT PRIMARY KEY,
   player_id INT NOT NULL UNIQUE,
   matches_played INT DEFAULT 0,
@@ -38,7 +40,7 @@ CREATE TABLE player_stats (
   FOREIGN KEY (player_id) REFERENCES player(player_id)
 );
 
-CREATE TABLE scout_dashboard (
+CREATE TABLE IF NOT EXISTS scout_dashboard (
   id INT AUTO_INCREMENT PRIMARY KEY,
   scout_id INT NOT NULL,
   player_id INT NOT NULL,

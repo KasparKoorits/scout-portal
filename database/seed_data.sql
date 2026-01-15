@@ -8,7 +8,18 @@ TRUNCATE TABLE scout_dashboard;
 TRUNCATE TABLE player_stats;
 TRUNCATE TABLE player;
 TRUNCATE TABLE club;
+TRUNCATE TABLE scout;
 SET FOREIGN_KEY_CHECKS=1;
+
+-- =====================
+-- SCOUTS (with hashed passwords)
+-- =====================
+-- Password for all demo scouts is 'password123'
+-- In production, users should register their own accounts with secure passwords
+INSERT INTO scout (name, email, password_hash) VALUES
+('John Smith', 'john@scout.com', '$2b$10$rXKvHHKL7fz3Nq5Y7Zx8eOZ0qG9P8Y5X3J7V1W2K4M6N8P0R2T4V6'),
+('Maria Garcia', 'maria@scout.com', '$2b$10$rXKvHHKL7fz3Nq5Y7Zx8eOZ0qG9P8Y5X3J7V1W2K4M6N8P0R2T4V6'),
+('David Lee', 'david@scout.com', '$2b$10$rXKvHHKL7fz3Nq5Y7Zx8eOZ0qG9P8Y5X3J7V1W2K4M6N8P0R2T4V6');
 
 -- =====================
 -- CLUBS

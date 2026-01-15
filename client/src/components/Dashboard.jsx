@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const API = "http://localhost:3001";
-const SCOUT_ID = 1;
 
 export default function Dashboard() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [tracked, setTracked] = useState([]);
   const [results, setResults] = useState([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const location = useLocation();
 
+  const SCOUT_ID = user?.scout_id || 1;
   const trackedSet = useMemo(() => new Set(tracked.map(p => p.player_id)), [tracked]);
 
   useEffect(() => {
@@ -87,19 +90,33 @@ export default function Dashboard() {
     }
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <>
       <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <h1 style={{ margin: 0 }}>Scout Dashboard</h1>
+            {user && <p style={{ margin: "6px 0 0", opacity: 0.7, fontSize: 14 }}>Welcome, {user.name}</p>}
             {status && <p style={{ margin: "6px 0 0", opacity: 0.8 }}>{status}</p>}
           </div>
-          <Link to="/add-player">
-            <button style={{ padding: "12px 24px", fontSize: "16px", fontWeight: 600 }}>
-              + Add Player
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Link to="/add-player">
+              <button style={{ padding: "12px 24px", fontSize: "16px", fontWeight: 600 }}>
+                + Add Player
+              </button>
+            </Link>
+            <button 
+              onClick={handleLogout}
+              style={{ padding: "12px 24px", fontSize: "16px", fontWeight: 600, backgroundColor: "#dc2626", color: "white", border: "1px solid #b91c1c" }}
+            >
+              Logout
             </button>
-          </Link>
+          </div>
         </div>
       </div>
 

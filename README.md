@@ -94,13 +94,13 @@ The app uses JWT-based authentication:
 ### Register
 ```
 POST /api/auth/register
-Body: { "username": "scout1", "password": "password123" }
+Body: { "name": "John Smith", "email": "john@scout.com", "password": "password123" }
 ```
 
 ### Login
 ```
 POST /api/auth/login
-Body: { "username": "scout1", "password": "password123" }
+Body: { "email": "john@scout.com", "password": "password123" }
 ```
 
 The API returns a JWT token that should be included in subsequent requests:
@@ -122,12 +122,6 @@ Authorization: Bearer <token>
 - `GET /api/dashboard/:scoutId` - Get scout's tracked players
 - `POST /api/dashboard` - Add player to dashboard
 - `DELETE /api/dashboard/:id` - Remove player from dashboard
-
-### Notes
-- `GET /api/notes/:playerId/:scoutId` - Get notes for a player
-- `POST /api/notes` - Create note
-- `PUT /api/notes/:id` - Update note
-- `DELETE /api/notes/:id` - Delete note
 
 ## 🔧 Configuration
 
@@ -179,12 +173,11 @@ npm run build
 ## 📦 Database Schema
 
 ### Main Tables
-- **scout** - User accounts for scouts
-- **player** - Player information
+- **scout** - User accounts for scouts (name, email, password_hash)
+- **player** - Player information (full_name, position, country, birth_date, etc.)
 - **club** - Football clubs
-- **player_stats** - Player statistics
+- **player_stats** - Player statistics (matches_played, goals, assists)
 - **scout_dashboard** - Tracks which players each scout is following
-- **scout_notes** - Notes scouts make about players
 
 ## 🤝 Contributing
 

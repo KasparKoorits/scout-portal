@@ -5,23 +5,33 @@ import User from "../models/userModel.js";
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 export const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
   }
 
   try {
-    const existingUser = await User.findByUsername(username);
+    const existingUser = await User.findByEmail(email);
     
     if (existingUser) {
-      return res.status(400).json({ error: "Username already exists" });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    await User.create({ username, password_hash });
+    const scoutId = await User.create({ name, email, password_hash });
 
-    res.status(201).json({ message: "User registered successfully!" });
+    const token = jwt.sign({ scoutId, email }, JWT_SECRET, { expiresIn: "24h" });
+
+    res.status(201).json({ 
+      message: "User registered successfully!",
+      token,
+      scout: { scout_id: scoutId, name, email }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred during registration" });
@@ -29,14 +39,14 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
   }
 
   try {
-    const user = await User.findByUsername(username);
+    const user = await User.findByEmail(email);
     
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -48,9 +58,16 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user.scout_id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ scoutId: user.scout_id, email: user.email }, JWT_SECRET, { expiresIn: "24h" });
 
-    res.json({ auth: true, token });
+    res.json({ 
+      token,
+      scout: {
+        scout_id: user.scout_id,
+        name: user.name,
+        email: user.email
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "An error occurred during login" });

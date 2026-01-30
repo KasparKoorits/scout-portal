@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-const API = "http://localhost:3001";
+const API = "";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();

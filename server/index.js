@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const handleError = (res, error) => {
   console.error(error);
@@ -137,7 +137,7 @@ app.post("/api/players", async (req, res) => {
     const {
       full_name,
       position,
-      club_id,
+      club_name,
       country,
       birth_date,
       height_cm,
@@ -148,6 +148,26 @@ app.post("/api/players", async (req, res) => {
 
     if (!full_name || !position) {
       return res.status(400).json({ error: "full_name and position are required" });
+    }
+
+    let club_id = null;
+
+    // If club_name is provided, find or create the club
+    if (club_name && club_name.trim()) {
+      const [existingClubs] = await pool.query(
+        `SELECT club_id FROM club WHERE name = ?`,
+        [club_name.trim()]
+      );
+
+      if (existingClubs.length > 0) {
+        club_id = existingClubs[0].club_id;
+      } else {
+        const [clubResult] = await pool.query(
+          `INSERT INTO club (name) VALUES (?)`,
+          [club_name.trim()]
+        );
+        club_id = clubResult.insertId;
+      }
     }
 
     const [result] = await pool.query(

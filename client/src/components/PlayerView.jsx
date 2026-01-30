@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-const API = "http://localhost:3001";
+const API = "";
 
 const StatBox = ({ label, value }) => (
   <div className="statBox">

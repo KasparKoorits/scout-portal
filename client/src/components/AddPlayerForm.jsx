@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-const API = "http://localhost:3001";
+const API = "";
 
 const INITIAL_FORM = {
   full_name: "",
   position: "",
-  club_id: "",
+  club_name: "",
   country: "",
   birth_date: "",
   height_cm: "",
@@ -15,17 +15,9 @@ const INITIAL_FORM = {
 };
 
 export default function AddPlayerForm({ onPlayerAdded }) {
-  const [clubs, setClubs] = useState([]);
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch(`${API}/api/clubs`)
-      .then(res => res.json())
-      .then(setClubs)
-      .catch(e => console.error("Failed to load clubs", e));
-  }, []);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -39,7 +31,7 @@ export default function AddPlayerForm({ onPlayerAdded }) {
     try {
       const payload = {
         ...formData,
-        club_id: formData.club_id ? Number(formData.club_id) : null,
+        club_name: formData.club_name || null,
         country: formData.country || null,
         birth_date: formData.birth_date || null,
         height_cm: formData.height_cm ? Number(formData.height_cm) : null,
@@ -95,25 +87,31 @@ export default function AddPlayerForm({ onPlayerAdded }) {
           <label style={labelStyle}>
             Position <span style={{ color: "#ff6b6b" }}>*</span>
           </label>
-          <input
-            type="text"
+          <select
             name="position"
             value={formData.position}
             onChange={handleChange}
             required
-            placeholder="e.g., Forward, Midfielder"
-            style={inputStyle}
-          />
+            style={{ ...inputStyle, padding: 10 }}
+          >
+            <option value="">-- Select position --</option>
+            <option value="Goalkeeper">Goalkeeper</option>
+            <option value="Defender">Defender</option>
+            <option value="Midfielder">Midfielder</option>
+            <option value="Forward">Forward</option>
+          </select>
         </div>
 
         <div>
           <label style={labelStyle}>Club</label>
-          <select name="club_id" value={formData.club_id} onChange={handleChange} style={{ ...inputStyle, padding: 10 }}>
-            <option value="">-- Select club (optional) --</option>
-            {clubs.map(club => (
-              <option key={club.club_id} value={club.club_id}>{club.name}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            name="club_name"
+            value={formData.club_name}
+            onChange={handleChange}
+            placeholder="e.g., Manchester United"
+            style={inputStyle}
+          />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>

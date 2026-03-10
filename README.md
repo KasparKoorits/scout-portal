@@ -1,6 +1,7 @@
 # 🔍 Scout Portal
+## Made by Kaspar Koorits and Jakob Kaur Kelder using Live Share.
 
-A full-stack web application for football scouts to track and manage player information. Built with React, Node.js, Express, and MySQL. Made by Kaspar Koorits and Jakob Kaur Kelder using Live Share (VS Code plugin)
+A full-stack web application for football scouts to track and manage player information. Built with React, Node.js, Express, and MySQL.
 
 ## 📋 Overview
 
